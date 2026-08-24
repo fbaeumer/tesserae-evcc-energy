@@ -1,0 +1,136 @@
+
+:host { font-family: inherit; }
+.fox-widget {
+  height: 100%;
+  display: grid;
+  grid-template-rows: 54px minmax(0,1fr) 68px;
+  background: var(--surface);
+  color: var(--text-primary);
+  overflow: hidden;
+}
+.fox-head {
+  display:flex; align-items:center; justify-content:space-between;
+  border-bottom: 2px solid var(--text-primary);
+  padding: 0 18px;
+}
+.fox-title { font-size: clamp(24px, 5cqmin, 40px); font-weight: 900; }
+.fox-time { font-size: clamp(18px, 4cqmin, 30px); font-weight: 800; }
+.fox-main {
+  min-height:0;
+  display:grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(260px, .9fr);
+}
+.fox-chart {
+  min-width:0; min-height:0;
+  border-right:2px solid var(--text-primary);
+  background:white;
+  display:grid;
+  padding: 6px 8px 2px 6px;
+}
+.fox-chart-empty {
+  display:grid; place-items:center;
+  font-size: clamp(16px, 3cqmin, 22px); font-weight:750;
+  opacity:.55;
+}
+.fox-svg { width:100%; height:100%; display:block; overflow:hidden; }
+.fox-svg .grid-h { stroke: var(--text-primary); stroke-width: 1; opacity: .16; }
+.fox-svg .area { fill: var(--text-primary); opacity: .16; }
+.fox-svg .line {
+  fill: none; stroke: var(--text-primary);
+  stroke-linejoin: round; stroke-linecap: round;
+}
+.fox-svg .line-forecast { stroke-width: 2; stroke-dasharray: 5 4; opacity: .55; }
+.fox-svg .line-actual { stroke-width: 3.2; }
+.fox-svg .axis-base { stroke: var(--text-primary); stroke-width: 1.4; }
+.fox-svg .now { stroke: var(--text-primary); stroke-width: 1.8; stroke-dasharray: 4 3; }
+.fox-svg .midnight { stroke: var(--text-primary); stroke-width: 1.4; opacity: .35; }
+.fox-svg .axis-y {
+  fill: var(--text-primary); font-size: 11px; font-weight: 750;
+  text-anchor: end; dominant-baseline: middle;
+}
+.fox-svg .axis-x {
+  fill: var(--text-primary); font-size: 12px; font-weight: 750;
+  text-anchor: middle;
+}
+.fox-svg .day {
+  fill: var(--text-primary); font-size: 13px; font-weight: 800;
+  text-anchor: middle;
+}
+.fox-svg .peak { fill: var(--text-primary); font-size: 12px; font-weight: 800; }
+.fox-svg .peak-dot { fill: var(--text-primary); }
+.fox-stats {
+  display:grid; min-height:0;
+  grid-auto-rows:1fr;
+}
+.stat {
+  display:grid; grid-template-columns: 42px minmax(0,1fr) auto;
+  gap:10px; align-items:center;
+  padding: 5px 14px;
+  border-bottom:1.5px solid var(--text-primary);
+}
+.stat:last-child { border-bottom:0; }
+.stat i { font-size: clamp(25px, 5cqmin, 38px); }
+.stat span { font-size: clamp(16px, 3.2cqmin, 25px); font-weight:850; }
+.stat small { display:block; font-size:.62em; font-weight:650; }
+.stat b { font-size: clamp(17px, 3.6cqmin, 30px); white-space:nowrap; }
+.today {
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  align-items:stretch;
+  gap:0;
+  border-top:2px solid var(--text-primary);
+  font-weight:900;
+}
+.today-stack {
+  display:grid;
+  grid-template-rows: 1fr 1fr;
+  min-height:0;
+}
+.today-stack .today-item {
+  min-height:0;
+}
+.today-stack .today-item + .today-item {
+  border-top: 1.5px solid var(--text-primary);
+}
+.today > .today-item,
+.today > .today-car,
+.today-stack + .today-item,
+.today-stack + .today-stack {
+  border-left: 2px solid var(--text-primary);
+}
+.today-item {
+  display:grid;
+  grid-template-columns: 38px 1fr auto;
+  align-items:center;
+  gap:10px;
+  padding:0 14px;
+  min-height: 0;
+}
+.today-car {
+  display:grid;
+  grid-template-columns: 42px minmax(0,1fr) auto;
+  align-items:center;
+  gap:10px;
+  padding:0 14px;
+  min-height:0;
+}
+.today i { font-size:22px; }
+.today-car i { font-size: clamp(28px, 5cqmin, 40px); }
+.today span { font-size:clamp(13px, 2.6cqmin, 20px); }
+.today-car span { font-size: clamp(16px, 3.2cqmin, 24px); }
+.today-car small { display:block; font-size:.62em; font-weight:650; }
+.today b { font-size:clamp(15px, 3.2cqmin, 24px); white-space: nowrap; }
+.today-car b { font-size: clamp(20px, 4cqmin, 32px); }
+.error-row {
+  padding:18px; display:flex; gap:12px; align-items:flex-start;
+  font-size:18px; font-weight:750;
+}
+.error-row i { font-size:32px; }
+
+@media (max-width: 560px) {
+  .fox-widget { grid-template-rows:48px minmax(0,1fr) 60px; }
+  .fox-main { grid-template-columns: 1.25fr 1fr; }
+  .stat { grid-template-columns:30px 1fr auto; padding:3px 8px; gap:5px; }
+  .stat small { display:none; }
+}
+

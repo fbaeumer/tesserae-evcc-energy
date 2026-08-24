@@ -1,0 +1,69 @@
+{
+  "tesserae_compat": "1.x",
+  "name": "EVCC, Energy",
+  "version": "1.0.0",
+  "kind": "widget",
+  "description": "Live evcc snapshot: PV forecast vs actual, house, battery, grid, and optional charger. Works with any evcc instance on your network.",
+  "icon": "ph-chart-line",
+  "supports": {
+    "sizes": ["sm", "md", "lg"]
+  },
+  "cell_options": [
+    {
+      "name": "url",
+      "type": "string",
+      "label": "EVCC URL",
+      "default": "",
+      "help": "Base URL of your evcc instance, e.g. http://192.168.1.10:7070"
+    },
+    {
+      "name": "loadpoint",
+      "type": "number",
+      "label": "Loadpoint index",
+      "default": 0,
+      "help": "0 is the first charger. Only used when the vehicle panel is shown."
+    },
+    {
+      "name": "title",
+      "type": "string",
+      "label": "Title",
+      "default": "",
+      "help": "Leave empty to use the language default (Energy / Energie)."
+    },
+    {
+      "name": "language",
+      "type": "select",
+      "label": "Language",
+      "default": "de",
+      "choices": [
+        { "value": "de", "label": "Deutsch" },
+        { "value": "en", "label": "English" }
+      ]
+    },
+    {
+      "name": "vehicle_name",
+      "type": "string",
+      "label": "Vehicle name",
+      "default": "",
+      "help": "Shown when evcc has no vehicle title (car unplugged). Leave empty for Auto / Vehicle."
+    },
+    {
+      "name": "show_car",
+      "type": "boolean",
+      "label": "Show vehicle",
+      "default": true
+    },
+    {
+      "name": "show_forecast",
+      "type": "boolean",
+      "label": "Show forecast footer",
+      "default": true
+    }
+  ],
+  "render": {
+    "needs_network": true
+  },
+  "requires": [
+    "network:*"
+  ]
+}
