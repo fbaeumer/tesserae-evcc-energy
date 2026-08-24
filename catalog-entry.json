@@ -5,7 +5,7 @@
   "icon": "ph-chart-line",
   "author": {
     "name": "Frederik Bäumer",
-    "github": "REPLACE_GITHUB_HANDLE"
+    "github": "fbaeumer"
   },
   "tags": ["utility"],
   "kind": "widget",
@@ -14,8 +14,8 @@
   "screenshot_sizes": ["lg"],
   "release": {
     "version": "1.0.0",
-    "tarball_url": "https://github.com/REPLACE_GITHUB_HANDLE/tesserae-evcc-energy/archive/refs/tags/v1.0.0.tar.gz",
+    "tarball_url": "https://github.com/fbaeumer/tesserae-evcc-energy/archive/refs/tags/v1.0.0.tar.gz",
     "sha256": "REPLACE_AFTER_TAGGING"
   },
-  "source": "https://github.com/REPLACE_GITHUB_HANDLE/tesserae-evcc-energy"
+  "source": "https://github.com/fbaeumer/tesserae-evcc-energy"
 }
