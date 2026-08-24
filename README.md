@@ -4,6 +4,10 @@ Tesserae widget for [evcc](https://evcc.io). Live house energy plus a two-day PV
 
 Plugin id: `evcc_energy` · Catalog name: **EVCC, Energy**
 
+![Dashboard example](example.png)
+
+![On a Seeed Studio XIAO 7.5&quot; ePaper Panel](real.jpeg)
+
 ## Install
 
 **From the Tesserae catalog** (once listed): Settings → Widgets → Browse catalog → *EVCC, Energy*.
