@@ -15,7 +15,7 @@
   "release": {
     "version": "1.0.0",
     "tarball_url": "https://github.com/fbaeumer/tesserae-evcc-energy/archive/refs/tags/v1.0.0.tar.gz",
-    "sha256": "REPLACE_AFTER_TAGGING"
+    "sha256": "65f5f9ef0458e4feb44ba7bf1b353442488aca6eb27b9dfeaee7e5f6c65920c7"
   },
   "source": "https://github.com/fbaeumer/tesserae-evcc-energy"
 }
