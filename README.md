@@ -53,6 +53,12 @@ See [`catalog-entry.json`](catalog-entry.json) for the `widgets.json` snippet. A
 curl -sL https://github.com/<you>/tesserae-evcc-energy/archive/refs/tags/v1.0.0.tar.gz | shasum -a 256
 ```
 
+## Notes
+
+This is a private hobby project. I use the repo mainly as a backup for myself. I take **no responsibility** if you install it, break something, or lose data. Feedback is welcome.
+
+Built with [Cursor](https://cursor.com) and **Cursor Grok 4.6 High**.
+
 ## License
 
 [AGPL-3.0-or-later](LICENSE), same as Tesserae.
