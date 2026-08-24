@@ -26,6 +26,7 @@ const I18N = {
     err_invalid_url: "EVCC-URL muss mit http:// oder https:// beginnen.",
     err_timeout: "EVCC Timeout.",
     err_unexpected: "Unerwartete EVCC-Antwort.",
+    err_fetch_failed: "EVCC nicht erreichbar.",
   },
   en: {
     title: "Energy",
@@ -53,6 +54,7 @@ const I18N = {
     err_invalid_url: "EVCC URL must start with http:// or https://.",
     err_timeout: "EVCC timed out.",
     err_unexpected: "Unexpected EVCC response.",
+    err_fetch_failed: "EVCC is unreachable.",
   },
 };
 

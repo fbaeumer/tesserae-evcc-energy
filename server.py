@@ -1,11 +1,16 @@
-
 from __future__ import annotations
 
-import json
-import subprocess
+import logging
 from datetime import datetime, timedelta
 from typing import Any
+from urllib.error import URLError
 from urllib.parse import urlparse, urlencode
+
+from app.plugin_http import fetch_json
+
+log = logging.getLogger(__name__)
+
+HTTP_TIMEOUT_S = 8
 
 
 def _num(v: Any, default: float = 0.0) -> float:
@@ -27,16 +32,13 @@ def _base_url(value: str) -> str:
     return value
 
 
-def _curl_json(url: str) -> Any:
-    p = subprocess.run(
-        ["/usr/bin/curl", "--silent", "--show-error", "--fail", "--location",
-         "--connect-timeout", "3", "--max-time", "8",
-         "--header", "Accept: application/json", url],
-        capture_output=True, text=True, timeout=10, check=False
+def _get_json(url: str) -> Any:
+    return fetch_json(
+        url,
+        headers={"Accept": "application/json"},
+        timeout=HTTP_TIMEOUT_S,
+        retries=0,
     )
-    if p.returncode:
-        raise RuntimeError((p.stderr or "").strip() or f"curl exit {p.returncode}")
-    return json.loads(p.stdout)
 
 
 def _unwrap(data: Any) -> Any:
@@ -63,14 +65,23 @@ def _hhmm(value: Any) -> str:
 
 
 def _energy_kwh(value: Any) -> float | None:
+    """evcc session / today / history energy fields are already kWh."""
     if value is None:
         return None
     n = _num(value, -1)
     if n < 0:
         return None
-    if n > 250:
-        return round(n / 1000.0, 2)
     return round(n, 3)
+
+
+def _forecast_energy_kwh(value: Any) -> float | None:
+    """evcc documents forecast.solar.*.energy in Wh."""
+    if value is None:
+        return None
+    n = _num(value, -1)
+    if n < 0:
+        return None
+    return round(n / 1000.0, 3)
 
 
 def _solar_forecast(state: dict) -> dict:
@@ -105,9 +116,9 @@ def _solar_forecast(state: dict) -> dict:
         "pv_forecast_now_h": round(
             now.hour + now.minute / 60.0 + now.second / 3600.0, 3
         ),
-        "pv_forecast_today_kwh": _energy_kwh(today.get("energy")),
-        "pv_forecast_tomorrow_kwh": _energy_kwh(tomorrow.get("energy")),
-        "pv_forecast_after_kwh": _energy_kwh(after.get("energy")),
+        "pv_forecast_today_kwh": _forecast_energy_kwh(today.get("energy")),
+        "pv_forecast_tomorrow_kwh": _forecast_energy_kwh(tomorrow.get("energy")),
+        "pv_forecast_after_kwh": _forecast_energy_kwh(after.get("energy")),
     }
 
 
@@ -132,7 +143,11 @@ def _collect_history_numbers(data: Any, *, group: str, field: str) -> list[float
 
 
 def _sum_history(data: Any, group: str, field: str) -> float | None:
-    vals = [n for n in _collect_history_numbers(data, group=group, field=field) if 0 <= n < 1000]
+    vals = [
+        n
+        for n in _collect_history_numbers(data, group=group, field=field)
+        if n >= 0 and n == n
+    ]
     return round(sum(vals), 3) if vals else None
 
 
@@ -154,7 +169,8 @@ def _pv_actual_series(data: Any, start: datetime) -> dict:
             t0 = t0.astimezone(start.tzinfo)
             t1 = t1.astimezone(start.tzinfo) if t1 else t0 + timedelta(minutes=15)
             dt_h = max((t1 - t0).total_seconds() / 3600.0, 1 / 60)
-            hours.append(round((t1 - start).total_seconds() / 3600.0, 3))
+            # Plot at interval start so the curve lines up with forecast sample ts.
+            hours.append(round((t0 - start).total_seconds() / 3600.0, 3))
             watts.append(int(round(_num(pt.get("energy")) / dt_h * 1000)))
     return {"pv_actual_h": hours, "pv_actual_w": watts}
 
@@ -170,11 +186,15 @@ def _daily_energy_from_history(base: str) -> dict:
         "grouped": "false",
         "format": "json",
     }
-    data = _unwrap(_curl_json(base + "/api/history/energy?" + urlencode(params)))
+    data = _unwrap(_get_json(base + "/api/history/energy?" + urlencode(params)))
 
     exported = _sum_history(data, "grid", "returnEnergy")
     if exported is None:
-        negatives = [abs(v) for v in _collect_history_numbers(data, group="grid", field="energy") if v < 0]
+        negatives = [
+            abs(v)
+            for v in _collect_history_numbers(data, group="grid", field="energy")
+            if v < 0
+        ]
         exported = round(sum(negatives), 3) if negatives else None
 
     out = {
@@ -189,11 +209,19 @@ def _daily_energy_from_history(base: str) -> dict:
     return out
 
 
+def _error_code(exc: BaseException) -> str:
+    if isinstance(exc, TimeoutError):
+        return "timeout"
+    if isinstance(exc, URLError) and "timed out" in str(exc).lower():
+        return "timeout"
+    return "fetch_failed"
+
+
 def fetch(options: dict, settings: dict, *, ctx: dict) -> dict:
     del settings, ctx
     try:
         base = _base_url(str(options.get("url", "")))
-        state = _unwrap(_curl_json(base + "/api/state"))
+        state = _unwrap(_get_json(base + "/api/state"))
         if not isinstance(state, dict):
             raise ValueError("unexpected")
 
@@ -236,6 +264,7 @@ def fetch(options: dict, settings: dict, *, ctx: dict) -> dict:
         try:
             data.update(_daily_energy_from_history(base))
         except Exception:
+            log.exception("evcc_energy history fetch failed")
             data.setdefault("pv_today_kwh", None)
             data.setdefault("home_today_kwh", None)
             data.setdefault("feedin_today_kwh", None)
@@ -262,12 +291,16 @@ def fetch(options: dict, settings: dict, *, ctx: dict) -> dict:
 
         return data
 
-    except subprocess.TimeoutExpired:
-        return {"error": "timeout"}
     except ValueError as exc:
         code = str(exc)
         if code in {"empty_url", "invalid_url", "unexpected"}:
             return {"error": code}
-        return {"error": f"{type(exc).__name__}: {exc}"}
-    except Exception as exc:
-        return {"error": f"{type(exc).__name__}: {exc}"}
+        log.warning("evcc_energy fetch failed: %s", exc)
+        return {"error": "fetch_failed"}
+    except (TimeoutError, URLError) as exc:
+        code = _error_code(exc)
+        log.warning("evcc_energy fetch %s: %s", code, exc)
+        return {"error": code}
+    except Exception:
+        log.exception("evcc_energy fetch failed")
+        return {"error": "fetch_failed"}

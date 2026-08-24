@@ -1,7 +1,7 @@
 {
   "tesserae_compat": "1.x",
   "name": "EVCC, Energy",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "kind": "widget",
   "description": "Live evcc snapshot: PV forecast vs actual, house, battery, grid, and optional charger. Works with any evcc instance on your network.",
   "icon": "ph-chart-line",
