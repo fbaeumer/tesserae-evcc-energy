@@ -166,7 +166,7 @@ function forecastChart(d) {
   const na = Math.min(ah.length, aw.length);
 
   if (n < 2 && na < 2) {
-    return `<div class="fox-chart-empty">${esc(t("no_curve"))}</div>`;
+    return `<div class="evcc-chart-empty">${esc(t("no_curve"))}</div>`;
   }
 
   const W = 440, H = 230;
@@ -227,16 +227,16 @@ function forecastChart(d) {
   }
 
   return `
-    <svg class="fox-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">
+    <svg class="evcc-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">
       <defs>
-        <clipPath id="fox-plot">
+        <clipPath id="evcc-plot">
           <rect x="${L}" y="${T}" width="${iw}" height="${ih}"/>
         </clipPath>
       </defs>
       ${yTicks}
       ${days}
       <line x1="${L}" x2="${L + iw}" y1="${T + ih}" y2="${T + ih}" class="axis-base"/>
-      <g clip-path="url(#fox-plot)">
+      <g clip-path="url(#evcc-plot)">
         ${midnight}
         ${fill ? `<path d="${fill}" class="area"/>` : ""}
         ${forecast.n > 1 ? `<path d="${forecast.d}" class="line line-forecast"/>` : ""}
@@ -261,18 +261,18 @@ export default function render(shadow, ctx) {
     <link rel="stylesheet" href="/static/icons/phosphor/bold/style.css">
     <link rel="stylesheet" href="/plugins/evcc_energy/client.css">
 
-    <div class="w fox-widget" data-widget="evcc_energy">
-      <div class="fox-head">
-        <div class="fox-title">${title}</div>
-        <div class="fox-time">${esc(d.fetched_at || "")}</div>
+    <div class="w evcc-widget" data-widget="evcc_energy">
+      <div class="evcc-head">
+        <div class="evcc-title">${title}</div>
+        <div class="evcc-time">${esc(d.fetched_at || "")}</div>
       </div>
 
-      <div class="fox-main">
-        <div class="fox-chart">
+      <div class="evcc-main">
+        <div class="evcc-chart">
           ${forecastChart(d)}
         </div>
 
-        <div class="fox-stats">
+        <div class="evcc-stats">
           ${d.error ? `
           <div class="error-row"><i class="ph-bold ph-warning-circle"></i><span>${esc(errText(d.error))}</span></div>
           ` : `

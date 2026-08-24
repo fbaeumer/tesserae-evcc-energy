@@ -86,9 +86,9 @@ def test_vehicle_name_fallback(monkeypatch):
 
     monkeypatch.setattr(evcc, "_curl_json", fake_curl)
     out = evcc.fetch(
-        {"url": "http://192.168.1.10:7070", "vehicle_name": "Škoda Enyaq"},
+        {"url": "http://192.168.1.10:7070", "vehicle_name": "Example EV"},
         {},
         ctx={},
     )
-    assert out["loadpoint"]["title"] == "Škoda Enyaq"
+    assert out["loadpoint"]["title"] == "Example EV"
     assert out["loadpoint"]["connected"] is False
